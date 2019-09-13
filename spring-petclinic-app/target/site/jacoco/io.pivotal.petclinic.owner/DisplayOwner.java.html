@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DisplayOwner.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">petclinic</a> &gt; <a href="index.source.html" class="el_package">io.pivotal.petclinic.owner</a> &gt; <span class="el_source">DisplayOwner.java</span></div><h1>DisplayOwner.java</h1><pre class="source lang-java linenums">package io.pivotal.petclinic.owner;
+
+import io.pivotal.petclinic.model.Person;
+import io.pivotal.petclinic.visit.Visit;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
+import java.util.List;
+
+public class DisplayOwner extends Person {
+
+    @NotEmpty
+<span class="fc" id="L16">    @Getter</span>
+<span class="fc" id="L17">    @Setter</span>
+    private String address;
+
+    @NotEmpty
+<span class="fc" id="L21">    @Getter</span>
+<span class="fc" id="L22">    @Setter</span>
+    private String city;
+
+    @NotEmpty
+    @Digits(fraction = 0, integer = 10)
+<span class="fc" id="L27">    @Getter</span>
+<span class="fc" id="L28">    @Setter</span>
+    private String telephone;
+
+<span class="fc" id="L31">    @Getter</span>
+<span class="nc" id="L32">    @Setter</span>
+    private List&lt;DisplayPet&gt; pets = new ArrayList&lt;&gt;();
+
+<span class="fc" id="L35">    public DisplayOwner(Owner owner) {</span>
+<span class="fc" id="L36">        this.setId(owner.getId());</span>
+<span class="fc" id="L37">        this.setFirstName(owner.getFirstName());</span>
+<span class="fc" id="L38">        this.setLastName(owner.getLastName());</span>
+<span class="fc" id="L39">        this.setAddress(owner.getAddress());</span>
+<span class="fc" id="L40">        this.setCity(owner.getCity());</span>
+<span class="fc" id="L41">        this.setTelephone(owner.getTelephone());</span>
+<span class="fc" id="L42">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DBController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">petclinic</a> &gt; <a href="index.source.html" class="el_package">io.pivotal.petclinic.system</a> &gt; <span class="el_source">DBController.java</span></div><h1>DBController.java</h1><pre class="source lang-java linenums">package io.pivotal.petclinic.system;
+
+import io.pivotal.petclinic.owner.*;
+import io.pivotal.petclinic.vet.Specialty;
+import io.pivotal.petclinic.vet.Vet;
+import io.pivotal.petclinic.vet.VetRepository;
+import lombok.extern.java.Log;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDate;
+
+<span class="fc" id="L13">@Log</span>
+@RestController
+public class DBController {
+
+
+    private OwnerRepository ownerRepository;
+    private VetRepository vetRepository;
+    private PetRepository petRepository;
+
+    public DBController(OwnerRepository ownerRepository,
+                        VetRepository vetRepository,
+<span class="fc" id="L24">                        PetRepository petRepository) {</span>
+<span class="fc" id="L25">        this.ownerRepository = ownerRepository;</span>
+<span class="fc" id="L26">        this.vetRepository = vetRepository;</span>
+<span class="fc" id="L27">        this.petRepository = petRepository;</span>
+<span class="fc" id="L28">    }</span>
+
+    @GetMapping(&quot;/loaddb&quot;)
+    public String loadDB() {
+<span class="nc" id="L32">        vetRepository.save(Vet.newVet(&quot;James&quot;, &quot;Carter&quot;));</span>
+<span class="nc" id="L33">        vetRepository.save(Vet.newVet(&quot;Helen&quot;, &quot;Leary&quot;, Specialty.Radiology));</span>
+<span class="nc" id="L34">        vetRepository.save(Vet.newVet(&quot;Linda&quot;, &quot;Douglas&quot;, Specialty.Surgey, Specialty.Dentistry));</span>
+<span class="nc" id="L35">        vetRepository.save(Vet.newVet(&quot;Rafael&quot;, &quot;Ortega&quot;, Specialty.Surgey));</span>
+<span class="nc" id="L36">        vetRepository.save(Vet.newVet(&quot;Henry&quot;, &quot;Stevens&quot;, Specialty.Radiology));</span>
+<span class="nc" id="L37">        vetRepository.save(Vet.newVet(&quot;Sharon&quot;, &quot;Jenkins&quot;));</span>
+
+<span class="nc" id="L39">        Owner george = Owner.newOwner(&quot;George&quot;, &quot;Franklin&quot;, &quot;110 W. Liberty St.&quot;, &quot;Madison&quot;, &quot;6085551023&quot;);</span>
+<span class="nc" id="L40">        ownerRepository.save(george);</span>
+
+<span class="nc" id="L42">        Pet leo = Pet.newPet(george.getId(), &quot;Leo&quot;, LocalDate.parse(&quot;2010-09-07&quot;), PetType.Cat);</span>
+<span class="nc" id="L43">        petRepository.save(leo);</span>
+
+<span class="nc" id="L45">        Owner betty = Owner.newOwner(&quot;Betty&quot;, &quot;Davis&quot;, &quot;638 Cardinal Ave.&quot;, &quot;Sun Prairie&quot;, &quot;6085551749&quot;);</span>
+<span class="nc" id="L46">        ownerRepository.save(betty);</span>
+
+<span class="nc" id="L48">        Pet basil = Pet.newPet(betty.getId(), &quot;Basil&quot;, LocalDate.parse(&quot;2012-08-06&quot;), PetType.Hamster);</span>
+<span class="nc" id="L49">        petRepository.save(basil);</span>
+
+<span class="nc" id="L51">        Owner harold = Owner.newOwner(&quot;Harold&quot;, &quot;Davis&quot;, &quot;563 Friendly St.&quot;, &quot;Windsor&quot;, &quot;6085553198&quot;);</span>
+<span class="nc" id="L52">        ownerRepository.save(harold);</span>
+
+<span class="nc" id="L54">        Pet iggy = Pet.newPet(harold.getId(), &quot;Iggy&quot;, LocalDate.parse(&quot;2010-11-30&quot;), PetType.Lizard);</span>
+<span class="nc" id="L55">        petRepository.save(iggy);</span>
+
+<span class="nc" id="L57">        petRepository.findAll().forEach(pet -&gt; log.info(pet.toString()));</span>
+<span class="nc" id="L58">        vetRepository.findAll().forEach(vet -&gt; log.info(vet.toString()));</span>
+
+<span class="nc" id="L60">        return &quot;PCC Loadded&quot;;</span>
+
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>
