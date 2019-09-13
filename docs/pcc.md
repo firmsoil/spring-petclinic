@@ -27,3 +27,10 @@ destroy region --name=vets
 ## PCC
 create region --name=vets --type=PARTITION_REDUNDANT_PERSISTENT
 create region --name=owners --type=PARTITION_REDUNDANT_PERSISTENT
+
+
+## Write Behind
+
+what's difference between using a cache loader/writer and implementing the [AsyncEventListener for Write-Behind Cache Event Handling](https://gemfire.docs.pivotal.io/98/geode/developing/events/implementing_write_behind_event_handler.html)
+best way to manage connection string information
+how do you deploy jar file to pcc

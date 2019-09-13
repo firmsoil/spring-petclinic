@@ -1,0 +1,8 @@
+# This assumes using cluster configuration
+start locator --name=locator1
+configure pdx --read-serialized=true
+start server --name=server1 --server-port=40404 --locators=localhost[10334]
+create region --name=vets --type=PARTITION_REDUNDANT
+create region --name=owners --type=PARTITION_REDUNDANT
+create region --name=pets --type=PARTITION_REDUNDANT
+create region --name=visits --type=PARTITION_REDUNDANT
