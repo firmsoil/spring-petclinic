@@ -38,10 +38,6 @@ import java.util.UUID;
 @Region("pets")
 public class Pet extends NamedEntity {
 
-    @Getter
-    @Setter
-    private String name;
-
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Getter
     @Setter
