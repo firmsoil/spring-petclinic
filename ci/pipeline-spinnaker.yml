@@ -1,9 +1,10 @@
 ---
 resource_types:
-  - name: meta
+  - name: artifactory-resource
     type: docker-image
     source:
-      repository: swce/metadata-resource
+      repository: springio/artifactory-resource
+      tag: 0.0.10
 
 resources:
   - name: artifactory
