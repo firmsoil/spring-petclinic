@@ -15,8 +15,8 @@ resources:
       uri: ((code-repo-uri))
       branch: ((code-repo-branch))
       ignore_paths:
-        - "ci"
-        - "docs"
+        - "spring-petclinic-app/ci"
+        - "spring-petclinic-app/docs"
       private_key: ((code-repo-private-key))
 
   - name: ci-scripts
@@ -24,7 +24,7 @@ resources:
     source:
       uri: ((code-repo-uri))
       branch: ((code-repo-branch))
-      paths: ["ci"]
+      paths: ["spring-petclinic-app/ci"]
       private_key: ((code-repo-private-key))
 
   - name: version
