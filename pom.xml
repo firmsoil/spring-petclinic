@@ -122,14 +122,6 @@
     </dependency>
   </dependencies>
 
-    <distributionManagement>
-        <repository>
-            <id>${distribution.management.release.id}</id>
-            <url>${distribution.management.release.url}</url>
-        </repository>
-    </distributionManagement>
-
-
   <profiles>
     <profile>
       <id>default</id>
