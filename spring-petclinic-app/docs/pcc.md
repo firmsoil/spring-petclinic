@@ -14,15 +14,21 @@ start locator --name=l1
 configure pdx --read-serialized=true
 start server --name=s1
 
-create region --name=vets --type=PARTITION_REDUNDANT
-create region --name=owners --type=PARTITION_REDUNDANT
-create region --name=pets --type=PARTITION_REDUNDANT
-create region --name=visits --type=PARTITION_REDUNDANT
+create region --name=vets --type=PARTITION_REDUNDANT_PERSISTENT
+create region --name=owners --type=PARTITION_REDUNDANT_PERSISTENT
+create region --name=pets --type=PARTITION_REDUNDANT_PERSISTENT
+create region --name=visits --type=PARTITION_REDUNDANT_PERSISTENT
 
 shutdown --include-locators=true
 ```
 destroy region --name=vets
 
+
+or 
+
+```bash
+run --file=/Users/dpfeffer/workspace/spring-petclinic/spring-petclinic-app/geode-docker/gfsh/gofish.gfsh
+```
 
 ## Cleanup
 remove --region=/vets --all=true
@@ -38,8 +44,8 @@ cf delete-service petclinic-pcc -f
 ```bash
 cf create-service p-cloudcache dev-plan petclinic-pcc -c '{
 "distributed_system_id" : 1 }'
-cf create-service-key petclinic-pcc k1
-cf service-key petclinic-pcc k1
+    cf create-service-key petclinic-pcc k1
+    cf service-key petclinic-pcc k1
 
 ```
 
@@ -88,30 +94,30 @@ cf service-key petclinic-pcc k1
 
 4. Test on East Instance 1
 ```bash
-create gateway-sender --id=send_to_2 --remote-distributed-system-id=2 --enable-persistence=true
-create region --name=regionX --gateway-sender-id=send_to_2 --type=PARTITION_REDUNDANT
+create gateway-sender --id=send_to_peer --remote-distributed-system-id=2 --enable-persistence=true
+create region --name=regionX --gateway-sender-id=send_to_peer --type=PARTITION_REDUNDANT
 ```
 
 5. Test on West Instance 2
 ```bash
-create gateway-sender --id=send_to_1 --remote-distributed-system-id=1 --enable-persistence=true
-create region --name=regionX --gateway-sender-id=send_to_1 --type=PARTITION_REDUNDANT
+create gateway-sender --id=send_to_peer --remote-distributed-system-id=1 --enable-persistence=true
+create region --name=regionX --gateway-sender-id=send_to_peer --type=PARTITION_REDUNDANT
 ```
 
 6. Deploy on East Instance 1
 ```bash
-create region --name=vets --type=PARTITION_REDUNDANT --gateway-sender-id=send_to_2
-create region --name=owners --type=PARTITION_REDUNDANT --gateway-sender-id=send_to_2
-create region --name=pets --type=PARTITION_REDUNDANT --gateway-sender-id=send_to_2
-create region --name=visits --type=PARTITION_REDUNDANT --gateway-sender-id=send_to_2
+create region --name=vets --type=PARTITION_REDUNDANT_PERSISTENT --gateway-sender-id=send_to_peer
+create region --name=owners --type=PARTITION_REDUNDANT_PERSISTENT --gateway-sender-id=send_to_peer
+create region --name=pets --type=PARTITION_REDUNDANT_PERSISTENT --gateway-sender-id=send_to_peer
+create region --name=visits --type=PARTITION_REDUNDANT_PERSISTENT --gateway-sender-id=send_to_peer
 ```
 
 6. Deploy on West Instance 2
 ```bash
-create region --name=vets --type=PARTITION_REDUNDANT --gateway-sender-id=send_to_1
-create region --name=owners --type=PARTITION_REDUNDANT --gateway-sender-id=send_to_1
-create region --name=pets --type=PARTITION_REDUNDANT --gateway-sender-id=send_to_1
-create region --name=visits --type=PARTITION_REDUNDANT --gateway-sender-id=send_to_1
+create region --name=vets --type=PARTITION_REDUNDANT_PERSISTENT --gateway-sender-id=send_to_peer
+create region --name=owners --type=PARTITION_REDUNDANT_PERSISTENT --gateway-sender-id=send_to_peer
+create region --name=pets --type=PARTITION_REDUNDANT_PERSISTENT --gateway-sender-id=send_to_peer
+create region --name=visits --type=PARTITION_REDUNDANT_PERSISTENT --gateway-sender-id=send_to_peer
 ```
 
 ## Write Behind

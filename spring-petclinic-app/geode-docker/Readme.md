@@ -3,8 +3,16 @@
 ## Build and Run Docker Image
 
 ```bash
-docker build . -t <YOUR_TAG>
-docker run -t <YOUR_TAG>
+docker build . -t petclinic-geode
+docker run -d -p 10334:10334 -p 40404:40404 -p 1099:1099 -t petclinic-geode
+# get container id
+
+docker logs <container_id>
+# validate all regions are created
+
+docker exec -it <container_id> /bin/bash
+$ ./geode/bin/gfsh
+
 ```
 
 ## Explanation

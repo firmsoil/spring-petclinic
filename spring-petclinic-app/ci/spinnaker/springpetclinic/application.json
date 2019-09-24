@@ -1,0 +1,23 @@
+{
+ "accounts": "cody@east.s1p.koundinya.cc,cody@west.s1p.koundinya.cc",
+ "cloudProviders": "cloudfoundry,kubernetes",
+ "createTs": "1566645330255",
+ "dataSources": {
+  "disabled": [],
+  "enabled": [
+   "canaryConfigs"
+  ]
+ },
+ "email": "dpfeffer@pivotal.io",
+ "enableRerunActiveExecutions": false,
+ "enableRestartRunningExecutions": false,
+ "instancePort": 80,
+ "lastModifiedBy": "anonymous",
+ "name": "springpetclinic",
+ "repoProjectKey": "doddatpivotal",
+ "repoSlug": "spring-petclinic",
+ "repoType": "gitlab",
+ "trafficGuards": [],
+ "updateTs": "1568995347000",
+ "user": "[anonymous]"
+}

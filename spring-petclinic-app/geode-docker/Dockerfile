@@ -1,5 +1,5 @@
-# Docker Apache Geode 1.9.1 represents GEODE version this can be changed to use a different version
-FROM apachegeode/geode:1.9.1
+# Docker Apache Geode 1.9.0 represents GEODE version this can be changed to use a different version
+FROM apachegeode/geode:1.9.0
 
 # Install network and other tools need for linux image
 #RUN env

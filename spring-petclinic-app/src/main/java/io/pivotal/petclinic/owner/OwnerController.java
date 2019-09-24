@@ -15,6 +15,7 @@
  */
 package io.pivotal.petclinic.owner;
 
+import io.micrometer.core.annotation.Timed;
 import io.pivotal.petclinic.visit.VisitRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
@@ -37,6 +38,7 @@ import java.util.*;
  * @author Michael Isvy
  */
 @Controller
+@Timed("petclinic.owner")
 @Component
 class OwnerController {
 
@@ -44,6 +46,9 @@ class OwnerController {
     private final OwnerRepository ownerRepository;
     private final PetRepository petRepository;
     private final VisitRepository visitRepository;
+
+    private Random randomGen = new Random();
+    private int FIND_TIME_MS = 250;
 
     public OwnerController(OwnerRepository ownerRepository, PetRepository petRepository, VisitRepository visitRepository) {
         this.ownerRepository = ownerRepository;
@@ -81,11 +86,19 @@ class OwnerController {
     }
 
     @GetMapping("/owners")
+    @Timed("petclinic.owners.find.time")
     public String processFindForm(Owner owner, BindingResult result, Map<String, Object> model) {
 
         // allow parameterless GET request for /ownerRepository to return all records
         if (owner.getLastName() == null) {
             owner.setLastName(""); // empty string signifies broadest possible search
+        }
+
+        int delayInMilliseconds = 0;
+        try {
+            delayInMilliseconds = FIND_TIME_MS + randomGen.nextInt(100);
+            Thread.sleep(delayInMilliseconds);
+        } catch (InterruptedException e) {
         }
 
         // find ownerRepository by last name

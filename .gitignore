@@ -16,3 +16,5 @@ target/*
 _site/
 .DS_Store
 target
+.secrets.yml
+s1p-deliver.json
