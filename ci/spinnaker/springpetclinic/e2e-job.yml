@@ -15,7 +15,6 @@ spec:
               set -ex;
               git clone http://github.com/mid-atlantic-pa/spring-petclinic.git code-repo;
               cd code-repo;
-              git checkout pcc;
               APPLICATION_URL="http://spring-petclinic-test.apps.east.s1p.koundinya.cc" ./mvnw clean verify -Pe2e
           command:
             - /bin/sh

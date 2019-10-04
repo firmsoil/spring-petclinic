@@ -333,7 +333,7 @@
        "containers": [
         {
          "args": [
-          "set -ex; git clone http://github.com/mid-atlantic-pa/spring-petclinic.git code-repo; cd code-repo; git checkout pcc; APPLICATION_URL=\"http://spring-petclinic-test.apps.east.s1p.koundinya.cc\" ./mvnw clean verify -Pe2e"
+          "set -ex; git clone http://github.com/mid-atlantic-pa/spring-petclinic.git code-repo; cd code-repo;  APPLICATION_URL=\"http://spring-petclinic-test.apps.east.s1p.koundinya.cc\" ./mvnw clean verify -Pe2e"
          ],
          "command": [
           "/bin/sh",
@@ -423,5 +423,5 @@
    "type": "artifactory"
   }
  ],
- "updateTs": "1570217323000"
+ "updateTs": "1570229161000"
 }
