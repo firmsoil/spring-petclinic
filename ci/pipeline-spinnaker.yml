@@ -1,0 +1,99 @@
+---
+resource_types:
+  - name: artifactory-resource
+    type: docker-image
+    source:
+      repository: springio/artifactory-resource
+      tag: 0.0.10
+
+resources:
+  - name: artifactory
+    type: artifactory-resource
+    source:
+      uri: ((repo-context-url))
+      username: ((m2-settings-repo-username))
+      password: ((m2-settings-repo-password))
+      build_name: ((artifactory-build-name))
+
+  - name: code-repo
+    type: git
+    source:
+      uri: ((code-repo-uri))
+      branch: ((code-repo-branch))
+      ignore_paths:
+        - "ci"
+        - "docs"
+      private_key: ((code-repo-private-key))
+
+  - name: ci-scripts
+    type: git
+    source:
+      uri: ((code-repo-uri))
+      branch: ((code-repo-branch))
+      paths: ["ci"]
+      private_key: ((code-repo-private-key))
+
+  - name: version
+    type: semver
+    source:
+      initial_version: 1.0.0-rc.0
+      driver: git
+      uri: ((version-repo-uri))
+      branch: ((version-repo-branch))
+      file: version
+      private_key: ((code-repo-private-key))
+
+jobs:
+  - name: unit-test
+    public: true
+    plan:
+      - get: code-repo
+        trigger: true
+      - get: ci-scripts
+      - task: unit-test
+        file: ci-scripts/ci/tasks/unit-test.yml
+
+  - name: build-and-publish
+    public: true
+    serial: true
+    plan:
+      - get: code-repo
+        passed: [ unit-test ]
+        trigger: true
+      - get: ci-scripts
+      - get: version
+        params: { pre: rc }
+      - task: build-and-publish
+        file: ci-scripts/ci/tasks/build-and-publish.yml
+        params:
+          REPO_CONTEXT_URL: ((repo-context-url))
+          M2_SETTINGS_REPO_USERNAME: ((m2-settings-repo-username))
+          M2_SETTINGS_REPO_PASSWORD: ((m2-settings-repo-password))
+      - put: version
+        params: { file: version/version }
+      - put: code-repo-tag
+        resource: code-repo
+        params:
+          repository: code-repo
+          tag: results/tag.txt
+          only_tag: true
+      - put: artifactory
+        params:
+          repo: libs-release-local
+          folder: distribution-repository
+          build_uri: "((concourse_uri))/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
+          build_number: "${BUILD_PIPELINE_NAME}-${BUILD_JOB_NAME}-${BUILD_NAME}"
+
+  - name: bump-major-version
+    public: true
+    serial: true
+    plan:
+      - put: version
+        params: { bump: major, pre: rc }
+
+  - name: bump-minor-version
+    public: true
+    serial: true
+    plan:
+      - put: version
+        params: { bump: minor, pre: rc }

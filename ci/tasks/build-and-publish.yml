@@ -1,0 +1,23 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudpipelines/pipeline-base
+    tag: latest
+
+inputs:
+  - name: ci-scripts
+  - name: code-repo
+  - name: version
+
+outputs:
+  - name: results
+  - name: distribution-repository
+
+caches:
+  - path: .m2/
+
+run:
+  path: ci-scripts/ci/tasks/build-and-publish.sh

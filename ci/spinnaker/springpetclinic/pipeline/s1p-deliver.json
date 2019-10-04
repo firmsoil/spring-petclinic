@@ -1,0 +1,427 @@
+{
+ "application": "springpetclinic",
+ "expectedArtifacts": [
+  {
+   "defaultArtifact": {
+    "artifactAccount": "demo-artifactory-maven",
+    "id": "244de121-d56f-4e67-ba4f-4dad424c9dbf",
+    "reference": "io.pivotal.petclinic:spring-petclinic-app:2.1.1-rc5",
+    "type": "maven/file"
+   },
+   "displayName": "shaggy-bulldog-46",
+   "id": "b19764f3-6301-4c75-8cc7-439aae8cdcae",
+   "matchArtifact": {
+    "artifactAccount": "demo-artifactory-maven",
+    "customKind": true,
+    "id": "332eaeb5-38df-498c-b307-77419dcb2429",
+    "reference": "io.pivotal.petclinic:spring-petclinic-app:.*",
+    "type": "maven/file"
+   },
+   "useDefaultArtifact": true,
+   "usePriorArtifact": false
+  }
+ ],
+ "id": "6a79f798-7129-4432-89ac-cece7fe41209",
+ "index": 0,
+ "keepWaitingPipelines": false,
+ "lastModifiedBy": "anonymous",
+ "limitConcurrent": true,
+ "name": "S1P Deliver",
+ "stages": [
+  {
+   "clusters": [
+    {
+     "account": "cody@east.s1p.koundinya.cc",
+     "application": "springpetclinic",
+     "applicationArtifact": {
+      "artifactId": "b19764f3-6301-4c75-8cc7-439aae8cdcae"
+     },
+     "cloudProvider": "cloudfoundry",
+     "freeFormDetails": "east",
+     "manifest": {
+      "direct": {
+       "buildpacks": [
+        "java_buildpack_offline"
+       ],
+       "diskQuota": "1024M",
+       "environment": [
+        {
+         "key": "DEPLOYMENT_TYPE",
+         "value": "test"
+        }
+       ],
+       "healthCheckType": "port",
+       "instances": 1,
+       "memory": "1024M",
+       "routes": [
+        "spring-petclinic-test.apps.east.s1p.koundinya.cc"
+       ],
+       "services": [
+        "petclinic-pcc"
+       ]
+      }
+     },
+     "provider": "cloudfoundry",
+     "region": "s1p \u003e petclinic-test",
+     "stack": "test",
+     "startApplication": true,
+     "strategy": "highlander"
+    }
+   ],
+   "name": "Deploy to Test (East)",
+   "refId": "1",
+   "requisiteStageRefIds": [],
+   "type": "deploy"
+  },
+  {
+   "clusters": [
+    {
+     "account": "cody@east.s1p.koundinya.cc",
+     "application": "springpetclinic",
+     "applicationArtifact": {
+      "artifactId": "b19764f3-6301-4c75-8cc7-439aae8cdcae"
+     },
+     "cloudProvider": "cloudfoundry",
+     "freeFormDetails": "east",
+     "manifest": {
+      "direct": {
+       "buildpacks": [
+        "java_buildpack_offline"
+       ],
+       "diskQuota": "1024M",
+       "environment": [
+        {
+         "key": "DEPLOYMENT_TYPE",
+         "value": "canary"
+        }
+       ],
+       "healthCheckType": "port",
+       "instances": 1,
+       "memory": "1024M",
+       "routes": [
+        "spring-petclinic.apps.east.s1p.koundinya.cc",
+        "spring-petclinic-canary.apps.east.s1p.koundinya.cc"
+       ],
+       "services": [
+        "petclinic-pcc"
+       ]
+      }
+     },
+     "provider": "cloudfoundry",
+     "region": "s1p \u003e petclinic",
+     "stack": "canary",
+     "startApplication": true,
+     "strategy": "highlander"
+    }
+   ],
+   "name": "Deploy Canary to Prod - East",
+   "refId": "2",
+   "requisiteStageRefIds": [
+    "11"
+   ],
+   "type": "deploy"
+  },
+  {
+   "clusters": [
+    {
+     "account": "cody@east.s1p.koundinya.cc",
+     "application": "springpetclinic",
+     "applicationArtifact": {
+      "artifactId": "b19764f3-6301-4c75-8cc7-439aae8cdcae"
+     },
+     "cloudProvider": "cloudfoundry",
+     "delayBeforeDisableSec": 0,
+     "delayBeforeScaleDownSec": 0,
+     "freeFormDetails": "east",
+     "manifest": {
+      "direct": {
+       "buildpacks": [
+        "java_buildpack_offline"
+       ],
+       "diskQuota": "1024M",
+       "environment": [
+        {
+         "key": "DEPLOYMENT_TYPE",
+         "value": "prod-east"
+        }
+       ],
+       "healthCheckType": "port",
+       "instances": 4,
+       "memory": "1024M",
+       "routes": [
+        "spring-petclinic.apps.east.s1p.koundinya.cc"
+       ],
+       "services": [
+        "petclinic-pcc"
+       ]
+      }
+     },
+     "maxRemainingAsgs": 2,
+     "provider": "cloudfoundry",
+     "region": "s1p \u003e petclinic",
+     "rollback": {
+      "onFailure": false
+     },
+     "scaleDown": false,
+     "stack": "prod",
+     "startApplication": true,
+     "strategy": "redblack"
+    }
+   ],
+   "name": "Deploy to Prod - East",
+   "refId": "3",
+   "requisiteStageRefIds": [
+    "6"
+   ],
+   "type": "deploy"
+  },
+  {
+   "application": "springpetclinic",
+   "cloudProvider": "cloudfoundry",
+   "cloudProviderType": "cloudfoundry",
+   "credentials": "cody@east.s1p.koundinya.cc",
+   "freeFormDetails": "east",
+   "manifest": {
+    "direct": {
+     "buildpacks": [
+      "java_buildpack_offline"
+     ],
+     "diskQuota": "1024M",
+     "environment": [
+      {
+       "key": "DEPLOYMENT_TYPE",
+       "value": "baseline"
+      }
+     ],
+     "healthCheckType": "port",
+     "instances": 1,
+     "memory": "1024M",
+     "routes": [
+      "spring-petclinic.apps.east.s1p.koundinya.cc",
+      "spring-petclinic-baseline.apps.east.s1p.koundinya.cc"
+     ],
+     "services": [
+      "petclinic-pcc"
+     ]
+    }
+   },
+   "name": "Deploy Baseline to Prod - East",
+   "refId": "4",
+   "region": "s1p \u003e petclinic",
+   "requisiteStageRefIds": [
+    "11"
+   ],
+   "source": {
+    "account": "cody@east.s1p.koundinya.cc",
+    "clusterName": "springpetclinic-prod-east",
+    "region": "s1p \u003e petclinic"
+   },
+   "stack": "baseline",
+   "startApplication": true,
+   "strategy": "highlander",
+   "target": "current_asg_dynamic",
+   "type": "cloneServerGroup"
+  },
+  {
+   "analysisType": "realTime",
+   "canaryConfig": {
+    "beginCanaryAnalysisAfterMins": "1",
+    "canaryAnalysisIntervalMins": "1",
+    "canaryConfigId": "dd9509ac-dc63-40bd-bdb6-4ff705375da8",
+    "lifetimeDuration": "PT0H3M",
+    "metricsAccountName": "dpfeffer@pivotal.io",
+    "scopes": [
+     {
+      "controlLocation": "spring-petclinic \u003e prod-east",
+      "controlScope": "deployment:baseline",
+      "experimentLocation": "spring-petclinic \u003e canary",
+      "experimentScope": "deployment:canary",
+      "extendedScopeParams": {},
+      "scopeName": "default",
+      "step": 0
+     }
+    ],
+    "scoreThresholds": {
+     "marginal": "40",
+     "pass": "50"
+    },
+    "storageAccountName": "kayenta-s3"
+   },
+   "completeOtherBranchesThenFail": false,
+   "continuePipeline": true,
+   "failPipeline": false,
+   "name": "Canary Analysis",
+   "refId": "5",
+   "requisiteStageRefIds": [
+    "2",
+    "4"
+   ],
+   "type": "kayentaCanary"
+  },
+  {
+   "completeOtherBranchesThenFail": false,
+   "continuePipeline": true,
+   "failPipeline": false,
+   "name": "Canary Analysis Result",
+   "preconditions": [
+    {
+     "context": {
+      "expression": "${#stage(\"Canary Analysis\")[\"status\"].toString() == \"SUCCEEDED\"}"
+     },
+     "failPipeline": true,
+     "type": "expression"
+    }
+   ],
+   "refId": "6",
+   "requisiteStageRefIds": [
+    "5"
+   ],
+   "type": "checkPreconditions"
+  },
+  {
+   "cloudProvider": "cloudfoundry",
+   "cloudProviderType": "cloudfoundry",
+   "cluster": "springpetclinic-canary-east",
+   "credentials": "cody@east.s1p.koundinya.cc",
+   "name": "Delete Canary",
+   "refId": "9",
+   "regions": [
+    "s1p \u003e petclinic"
+   ],
+   "requisiteStageRefIds": [
+    "6"
+   ],
+   "target": "current_asg_dynamic",
+   "type": "destroyServerGroup"
+  },
+  {
+   "cloudProvider": "cloudfoundry",
+   "cloudProviderType": "cloudfoundry",
+   "cluster": "springpetclinic-baseline-east",
+   "credentials": "cody@east.s1p.koundinya.cc",
+   "name": "Delete Baseline",
+   "refId": "10",
+   "regions": [
+    "s1p \u003e petclinic"
+   ],
+   "requisiteStageRefIds": [
+    "6"
+   ],
+   "target": "current_asg_dynamic",
+   "type": "destroyServerGroup"
+  },
+  {
+   "account": "default",
+   "alias": "runJob",
+   "application": "springpetclinic",
+   "cloudProvider": "kubernetes",
+   "credentails": "default",
+   "manifest": {
+    "apiVersion": "batch/v1",
+    "kind": "Job",
+    "metadata": {
+     "labels": {
+      "spinnaker-job": "e2e-test"
+     },
+     "name": "e2e-test",
+     "namespace": "default"
+    },
+    "spec": {
+     "backoffLimit": 1,
+     "template": {
+      "spec": {
+       "containers": [
+        {
+         "args": [
+          "set -ex; git clone http://github.com/mid-atlantic-pa/spring-petclinic.git code-repo; cd code-repo; git checkout pcc; APPLICATION_URL=\"http://spring-petclinic-test.apps.east.s1p.koundinya.cc\" ./mvnw clean verify -Pe2e"
+         ],
+         "command": [
+          "/bin/sh",
+          "-c"
+         ],
+         "image": "cloudpipelines/pipeline-base",
+         "name": "mvn-job"
+        }
+       ],
+       "restartPolicy": "Never"
+      }
+     },
+     "ttlSecondsAfterFinished": 100
+    }
+   },
+   "name": "Smoke Test",
+   "refId": "11",
+   "requisiteStageRefIds": [
+    "1"
+   ],
+   "source": "text",
+   "stageTimeoutMs": 600000,
+   "type": "runJobManifest"
+  },
+  {
+   "clusters": [
+    {
+     "account": "cody@west.s1p.koundinya.cc",
+     "application": "springpetclinic",
+     "applicationArtifact": {
+      "artifactId": "b19764f3-6301-4c75-8cc7-439aae8cdcae"
+     },
+     "cloudProvider": "cloudfoundry",
+     "delayBeforeDisableSec": 0,
+     "delayBeforeScaleDownSec": 0,
+     "freeFormDetails": "west",
+     "manifest": {
+      "direct": {
+       "buildpacks": [
+        "java_buildpack_offline"
+       ],
+       "diskQuota": "1024M",
+       "environment": [
+        {
+         "key": "DEPLOYMENT_TYPE",
+         "value": "prod-west"
+        }
+       ],
+       "healthCheckType": "port",
+       "instances": 2,
+       "memory": "1024M",
+       "routes": [
+        "spring-petclinic.apps.west.s1p.koundinya.cc"
+       ],
+       "services": [
+        "petclinic-pcc"
+       ]
+      }
+     },
+     "maxRemainingAsgs": 2,
+     "provider": "cloudfoundry",
+     "region": "s1p \u003e petclinic",
+     "rollback": {
+      "onFailure": false
+     },
+     "scaleDown": false,
+     "stack": "prod",
+     "startApplication": true,
+     "strategy": "redblack"
+    }
+   ],
+   "name": "Deploy to Prod - West",
+   "refId": "12",
+   "requisiteStageRefIds": [
+    "3"
+   ],
+   "type": "deploy"
+  }
+ ],
+ "triggers": [
+  {
+   "artifactorySearchName": "demo-artifactory",
+   "enabled": true,
+   "expectedArtifactIds": [
+    "b19764f3-6301-4c75-8cc7-439aae8cdcae"
+   ],
+   "type": "artifactory"
+  }
+ ],
+ "updateTs": "1570217323000"
+}

@@ -1,0 +1,10 @@
+---
+applications:
+  - name: spring-petclinic
+    path: target/spring-petclinic-app-2.1.0-rc9.jar
+    random-route: true
+    services:
+      - petclinic-pcc
+      - petclinic-credhub
+    env:
+      DEPLOYMENT_TYPE: east-dev

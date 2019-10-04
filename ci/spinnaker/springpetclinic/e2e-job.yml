@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    spinnaker-job: e2e-test
+  name: e2e-test
+  namespace: default
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      containers:
+        - args:
+            - >-
+              set -ex;
+              git clone http://github.com/mid-atlantic-pa/spring-petclinic.git code-repo;
+              cd code-repo;
+              git checkout pcc;
+              APPLICATION_URL="http://spring-petclinic-test.apps.east.s1p.koundinya.cc" ./mvnw clean verify -Pe2e
+          command:
+            - /bin/sh
+            - '-c'
+          image: cloudpipelines/pipeline-base
+          name: mvn-job
+      restartPolicy: Never
+  backoffLimit: 1
