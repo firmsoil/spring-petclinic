@@ -35,7 +35,6 @@ public class PetclinicIntegrationTests {
     private VetRepository vets;
 
     @Test
-    @Ignore("Not passing in ci system although passing locally, will troubleshoot soon")
     public void testFindAll() throws Exception {
         vets.findAll();
         vets.findAll(); // served from cache

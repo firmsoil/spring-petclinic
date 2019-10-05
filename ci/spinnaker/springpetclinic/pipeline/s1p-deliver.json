@@ -5,7 +5,7 @@
    "defaultArtifact": {
     "artifactAccount": "demo-artifactory-maven",
     "id": "244de121-d56f-4e67-ba4f-4dad424c9dbf",
-    "reference": "io.pivotal.petclinic:spring-petclinic-app:2.1.1-rc5",
+    "reference": "io.pivotal.petclinic:spring-petclinic-app:2.1.1-rc.9",
     "type": "maven/file"
    },
    "displayName": "shaggy-bulldog-46",
@@ -57,7 +57,8 @@
         "spring-petclinic-test.apps.east.s1p.koundinya.cc"
        ],
        "services": [
-        "petclinic-pcc"
+        "petclinic-pcc",
+        "petclinic-credhub"
        ]
       }
      },
@@ -103,7 +104,8 @@
         "spring-petclinic-canary.apps.east.s1p.koundinya.cc"
        ],
        "services": [
-        "petclinic-pcc"
+        "petclinic-pcc",
+        "petclinic-credhub"
        ]
       }
      },
@@ -152,7 +154,8 @@
         "spring-petclinic.apps.east.s1p.koundinya.cc"
        ],
        "services": [
-        "petclinic-pcc"
+        "petclinic-pcc",
+        "petclinic-credhub"
        ]
       }
      },
@@ -201,7 +204,8 @@
       "spring-petclinic-baseline.apps.east.s1p.koundinya.cc"
      ],
      "services": [
-      "petclinic-pcc"
+      "petclinic-pcc",
+      "petclinic-credhub"
      ]
     }
    },
@@ -232,9 +236,9 @@
     "metricsAccountName": "dpfeffer@pivotal.io",
     "scopes": [
      {
-      "controlLocation": "spring-petclinic \u003e prod-east",
+      "controlLocation": "s1p \u003e petclinic",
       "controlScope": "deployment:baseline",
-      "experimentLocation": "spring-petclinic \u003e canary",
+      "experimentLocation": "s1p \u003e petclinic",
       "experimentScope": "deployment:canary",
       "extendedScopeParams": {},
       "scopeName": "default",
@@ -389,7 +393,8 @@
         "spring-petclinic.apps.west.s1p.koundinya.cc"
        ],
        "services": [
-        "petclinic-pcc"
+        "petclinic-pcc",
+        "petclinic-credhub"
        ]
       }
      },
@@ -423,5 +428,5 @@
    "type": "artifactory"
   }
  ],
- "updateTs": "1570229161000"
+ "updateTs": "1570235998000"
 }

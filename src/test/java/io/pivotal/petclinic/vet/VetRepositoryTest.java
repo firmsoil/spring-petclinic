@@ -19,7 +19,6 @@ public class VetRepositoryTest {
     private VetRepository vetRepository;
 
     @Test
-    @Ignore("Not passing in ci system although passing locally, will troubleshoot soon")
     public void testVet() {
         Vet vet = Vet.newVet("Frank", "Smith", Specialty.Radiology, Specialty.Surgey);
 

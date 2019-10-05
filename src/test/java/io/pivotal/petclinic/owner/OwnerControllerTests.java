@@ -124,7 +124,6 @@ public class OwnerControllerTests {
     }
 
     @Test
-    @Ignore("Not passing in ci system although passing locally, will troubleshoot soon")
     public void testProcessFindFormSuccess() throws Exception {
         given(this.owners.findByLastNameOrderByLastName("")).willReturn(Lists.newArrayList(george, new Owner()));
         mockMvc.perform(get("/owners"))
@@ -194,7 +193,6 @@ public class OwnerControllerTests {
     }
 
     @Test
-    @Ignore("Not passing in ci system although passing locally, will troubleshoot soon")
     public void testShowOwner() throws Exception {
         mockMvc.perform(get("/owners/{ownerId}", TEST_OWNER_ID))
             .andExpect(status().isOk())

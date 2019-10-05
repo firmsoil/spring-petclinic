@@ -99,7 +99,6 @@ public class VisitControllerTests {
     }
 
     @Test
-    @Ignore("Not passing in ci system although passing locally, will troubleshoot soon")
     public void testProcessNewVisitFormSuccess() throws Exception {
         mockMvc.perform(post("/owners/*/pets/{petId}/visits/new", TEST_PET_ID)
             .param("name", "George")
