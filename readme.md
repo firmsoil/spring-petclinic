@@ -1,140 +1,163 @@
-# Spring PetClinic Sample Application [![Build Status](https://travis-ci.org/spring-projects/spring-petclinic.png?branch=master)](https://travis-ci.org/spring-projects/spring-petclinic/)
-Deploy this sample application to Pivotal Web Services:
+# Spring PetClinic Sample Application (Adapted for Multi-region HA)
 
-<a href="https://push-to.cfapps.io?repo=https%3A%2F%2Fgithub.com%2Fspring-projects%2Fspring-petclinic.git">
-    <img src="https://push-to.cfapps.io/ui/assets/images/Push-to-Pivotal-Light-with-Shadow.svg" width="180" alt="Push" align="center">
-</a>
+The following repo is adapted from [Spring PetClinic](https://github.com/spring-projects/spring-petclinic).
 
-## Understanding the Spring Petclinic application with a few diagrams
-<a href="https://speakerdeck.com/michaelisvy/spring-petclinic-sample-application">See the presentation here</a>
+Key aspects:
 
-## Running petclinic locally
-Petclinic is a [Spring Boot](https://spring.io/guides/gs/spring-boot) application built using [Maven](https://spring.io/guides/gs/maven/). You can build a jar file and run it from the command line:
-
-
-```
-git clone https://github.com/spring-projects/spring-petclinic.git
-cd spring-petclinic
-./mvnw package
-java -jar target/*.jar
-```
-
-You can then access petclinic here: http://localhost:8080/
-
-<img width="1042" alt="petclinic-screenshot" src="https://cloud.githubusercontent.com/assets/838318/19727082/2aee6d6c-9b8e-11e6-81fe-e889a5ddfded.png">
-
-Or you can run it from Maven directly using the Spring Boot Maven plugin. If you do this it will pick up changes that you make in the project immediately (changes to Java source files require a compile as well - most people use an IDE for this):
-
-```
-./mvnw spring-boot:run
-```
-
-## In case you find a bug/suggested improvement for Spring Petclinic
-Our issue tracker is available here: https://github.com/spring-projects/spring-petclinic/issues
+- Refactored JPA relational backend to target [Pivotal Cloud Cache](https://pivotal.io/pivotal-cloud-cache)
+- Added custom metrics to important business transactions
+- Instrumented for data dog
+- Added geode docker image for local testing
+- Added scripts for application CI with concourse and application CD with spinnaker
+- Instructions for configuration of bi-directional PCC wan gateway replication
 
 
-## Database configuration
+## Local Testing
 
-In its default configuration, Petclinic uses an in-memory database (HSQLDB) which
-gets populated at startup with data. A similar setup is provided for MySql in case a persistent database configuration is needed.
-Note that whenever the database type is changed, the app needs to be run with a different profile: `spring.profiles.active=mysql` for MySql.
+For Local Testing use the [Pet Clinic Geode Docker Contianer](geode-docker/Readme.md).
 
-You could start MySql locally with whatever installer works for your OS, or with docker:
+
+## PCC Setup on PAS
+
+> Per guidelinces in [WAN Bi-directional Setup](https://docs.pivotal.io/p-cloud-cache/1-8/WAN-bi-setup.html)
+
+1. Setup East Instance
+
+```bash
+cf create-service p-cloudcache dev-plan petclinic-pcc -c '{
+"distributed_system_id" : 1 }'
+    cf create-service-key petclinic-pcc k1
+    cf service-key petclinic-pcc k1
 
 ```
-docker run -e MYSQL_ROOT_PASSWORD=petclinic -e MYSQL_DATABASE=petclinic -p 3306:3306 mysql:5.7.8
+
+2. Setup West Instance
+
+```bash
+cf create-service p-cloudcache dev-plan petclinic-pcc -c '
+{
+  "distributed_system_id":2,
+  "remote_clusters":[
+  {
+    "remote_locators":[
+      "10.0.4.10[55221]"],
+    "trusted_sender_credentials":[
+    {
+      "username": "RETRIEVE_FROM_K1_ON_EAST_SERVER",
+      "password":"RETRIEVE_FROM_K1_ON_EAST_SERVER"
+    }]
+  }]
+}'
+cf create-service-key petclinic-pcc k1
+cf service-key petclinic-pcc k1
 ```
 
-Further documentation is provided [here](https://github.com/spring-projects/spring-petclinic/blob/master/src/main/resources/db/mysql/petclinic_db_setup_mysql.txt).
+3. Update East Instance
 
-## Working with Petclinic in your IDE
+```bash
+cf update-service petclinic-pcc -c '
+{
+  "remote_clusters":[
+  {
+    "remote_locators":[
+      "10.1.4.10[55221]"],
+    "trusted_sender_credentials":[
+    {
+      "username":"RETRIEVE_FROM_K1_ON_WEST_SERVER",
+      "password":"RETRIEVE_FROM_K1_ON_WEST_SERVER"
+    }]
+  }]
+}'
+cf delete-service-key petclinic-pcc k1 -f
+cf create-service-key petclinic-pcc k1
+cf service-key petclinic-pcc k1
 
-### Prerequisites
-The following items should be installed in your system:
-* Java 8 or newer.
-* git command line tool (https://help.github.com/articles/set-up-git)
-* Your preferred IDE 
-  * Eclipse with the m2e plugin. Note: when m2e is available, there is an m2 icon in `Help -> About` dialog. If m2e is
-  not there, just follow the install process here: https://www.eclipse.org/m2e/
-  * [Spring Tools Suite](https://spring.io/tools) (STS)
-  * IntelliJ IDEA
-  * [VS Code](https://code.visualstudio.com)
-
-### Steps:
-
-1) On the command line
-```
-git clone https://github.com/spring-projects/spring-petclinic.git
-```
-2) Inside Eclipse or STS
-```
-File -> Import -> Maven -> Existing Maven project
 ```
 
-Then either build on the command line `./mvnw generate-resources` or using the Eclipse launcher (right click on project and `Run As -> Maven install`) to generate the css. Run the application main method by right clicking on it and choosing `Run As -> Java Application`.
+4. Test on East Instance 1
+```bash
+create gateway-sender --id=send_to_peer --remote-distributed-system-id=2 --enable-persistence=true
+create region --name=regionX --gateway-sender-id=send_to_peer --type=PARTITION_REDUNDANT
+```
 
-3) Inside IntelliJ IDEA
+5. Test on West Instance 2
+```bash
+create gateway-sender --id=send_to_peer --remote-distributed-system-id=1 --enable-persistence=true
+create region --name=regionX --gateway-sender-id=send_to_peer --type=PARTITION_REDUNDANT
+```
 
-In the main menu, choose `File -> Open` and select the Petclinic [pom.xml](pom.xml). Click on the `Open` button.
+6. Deploy on East Instance 1
+```bash
+create region --name=vets --type=PARTITION_REDUNDANT_PERSISTENT --gateway-sender-id=send_to_peer
+create region --name=owners --type=PARTITION_REDUNDANT_PERSISTENT --gateway-sender-id=send_to_peer
+create region --name=pets --type=PARTITION_REDUNDANT_PERSISTENT --gateway-sender-id=send_to_peer
+create region --name=visits --type=PARTITION_REDUNDANT_PERSISTENT --gateway-sender-id=send_to_peer
+```
 
-CSS files are generated from the Maven build. You can either build them on the command line `./mvnw generate-resources`
-or right click on the `spring-petclinic` project then `Maven -> Generates sources and Update Folders`.
+7. Deploy on West Instance 2
+```bash
+create region --name=vets --type=PARTITION_REDUNDANT_PERSISTENT --gateway-sender-id=send_to_peer
+create region --name=owners --type=PARTITION_REDUNDANT_PERSISTENT --gateway-sender-id=send_to_peer
+create region --name=pets --type=PARTITION_REDUNDANT_PERSISTENT --gateway-sender-id=send_to_peer
+create region --name=visits --type=PARTITION_REDUNDANT_PERSISTENT --gateway-sender-id=send_to_peer
+```
 
-A run configuration named `PetClinicApplication` should have been created for you if you're using a recent Ultimate
-version. Otherwise, run the application by right clicking on the `PetClinicApplication` main class and choosing
-`Run 'PetClinicApplication'`.
+## Setup Data Dog Credentials in Each Space
+```bash
+cf create-service credhub default petclinic-credhub -c '{"datadog-api-key":"$API_KEY","datadog-application-key":"$APP_KEY"}'
+```
 
-4) Navigate to Petclinic
+## CI/CD Strategy
 
-Visit [http://localhost:8080](http://localhost:8080) in your browser.
+CI/CD strategy follows that documented with this example: https://github.com/doddatpivotal/pickup-prediction-service.
 
+## CI Pipeline
 
-## Looking for something in particular?
+![concourse](/docs/ci.png)
 
-|Spring Boot Configuration | Class or Java property files  |
-|--------------------------|---|
-|The Main Class | [PetClinicApplication](https://github.com/spring-projects/spring-petclinic/blob/master/src/main/java/org/springframework/samples/petclinic/PetClinicApplication.java) |
-|Properties Files | [application.properties](https://github.com/spring-projects/spring-petclinic/blob/master/src/main/resources) |
-|Caching | [CacheConfiguration](https://github.com/spring-projects/spring-petclinic/blob/master/src/main/java/org/springframework/samples/petclinic/system/CacheConfiguration.java) |
+Deploy pipeline
 
-## Interesting Spring Petclinic branches and forks
+```bash
+fly -t s1p login --team-name=digital -k
+fly -t s1p set-pipeline -c ci/pipeline-spinnaker.yml -l ci/.secrets.yml -p spring-petclinic -n
+fly -t s1p unpause-pipeline -p spring-petclinic
+fly -t s1p expose-pipeline -p spring-petclinic
 
-The Spring Petclinic master branch in the main [spring-projects](https://github.com/spring-projects/spring-petclinic)
-GitHub org is the "canonical" implementation, currently based on Spring Boot and Thymeleaf. There are
-[quite a few forks](https://spring-petclinic.github.io/docs/forks.html) in a special GitHub org
-[spring-petclinic](https://github.com/spring-petclinic). If you have a special interest in a different technology stack
-that could be used to implement the Pet Clinic then please join the community there.
+```
 
+## Generate load on the production Spinnaker deployed service
 
-## Interaction with other open source projects
+```bash
+kubectl -n default run injector-test --image=alpine:3.10 --generator=run-pod/v1  -- \
+    /bin/sh -c "apk add --no-cache curl; \
+    while true; do curl -sS --max-time 3 \
+    http://spring-petclinic-test.apps.east.s1p.koundinya.cc/owners?lastName=; done"
+```
 
-One of the best parts about working on the Spring Petclinic application is that we have the opportunity to work in direct contact with many Open Source projects. We found some bugs/suggested improvements on various topics such as Spring, Spring Data, Bean Validation and even Eclipse! In many cases, they've been fixed/implemented in just a few days.
-Here is a list of them:
+```bash
+kubectl -n default run injector-prod-east --image=alpine:3.10 --generator=run-pod/v1  -- \
+    /bin/sh -c "apk add --no-cache curl; \
+    while true; do curl -sS --max-time 3 \
+    http://spring-petclinic.apps.east.s1p.koundinya.cc/owners?lastName=; done"
+```
 
-| Name | Issue |
-|------|-------|
-| Spring JDBC: simplify usage of NamedParameterJdbcTemplate | [SPR-10256](https://jira.springsource.org/browse/SPR-10256) and [SPR-10257](https://jira.springsource.org/browse/SPR-10257) |
-| Bean Validation / Hibernate Validator: simplify Maven dependencies and backward compatibility |[HV-790](https://hibernate.atlassian.net/browse/HV-790) and [HV-792](https://hibernate.atlassian.net/browse/HV-792) |
-| Spring Data: provide more flexibility when working with JPQL queries | [DATAJPA-292](https://jira.springsource.org/browse/DATAJPA-292) |
+```bash
+kubectl -n default run injector-prod-west --image=alpine:3.10 --generator=run-pod/v1  -- \
+    /bin/sh -c "apk add --no-cache curl; \
+    while true; do curl -sS --max-time 3 \
+    http://spring-petclinic.apps.west.s1p.koundinya.cc/owners?lastName=; done"
+```
 
+## Spinnaker Scripts
 
-# Contributing
+![spinnaker](/docs/cd.png)
 
-The [issue tracker](https://github.com/spring-projects/spring-petclinic/issues) is the preferred channel for bug reports, features requests and submitting pull requests.
+1. Push app and pipeline
+```bash
+./scripts/push-spinnaker-config.sh
+```
 
-For pull requests, editor preferences are available in the [editor config](.editorconfig) for easy use in common text editors. Read more and download plugins at <https://editorconfig.org>. If you have not previously done so, please fill out and submit the [Contributor License Agreement](https://cla.pivotal.io/sign/spring).
-
-# License
-
-The Spring PetClinic sample application is released under version 2.0 of the [Apache License](https://www.apache.org/licenses/LICENSE-2.0).
-
-[spring-petclinic]: https://github.com/spring-projects/spring-petclinic
-[spring-framework-petclinic]: https://github.com/spring-petclinic/spring-framework-petclinic
-[spring-petclinic-angularjs]: https://github.com/spring-petclinic/spring-petclinic-angularjs 
-[javaconfig branch]: https://github.com/spring-petclinic/spring-framework-petclinic/tree/javaconfig
-[spring-petclinic-angular]: https://github.com/spring-petclinic/spring-petclinic-angular
-[spring-petclinic-microservices]: https://github.com/spring-petclinic/spring-petclinic-microservices
-[spring-petclinic-reactjs]: https://github.com/spring-petclinic/spring-petclinic-reactjs
-[spring-petclinic-graphql]: https://github.com/spring-petclinic/spring-petclinic-graphql
-[spring-petclinic-kotlin]: https://github.com/spring-petclinic/spring-petclinic-kotlin
-[spring-petclinic-rest]: https://github.com/spring-petclinic/spring-petclinic-rest
+2. Pull app and pipeline
+```bash
+./scripts/pull-spinnaker-config.sh
+```
